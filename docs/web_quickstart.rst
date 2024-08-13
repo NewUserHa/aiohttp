@@ -449,10 +449,17 @@ third-party library, :mod:`aiohttp_session`, that adds *session* support::
     from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
     async def handler(request):
-        session = await get_session(request)
-        last_visit = session['last_visit'] if 'last_visit' in session else None
-        text = 'Last visited: {}'.format(last_visit)
-        return web.Response(text=text)
+    session = await get_session(request)
+
+    if "last_visit" in session:
+        last_visit = session["last_visit"]
+    else:
+        last_visit = None
+        session["last_visit"] = time.time()
+    text = "Last visited: {}".format(last_visit)
+    
+    return web.Response(text=text)
+
 
     async def make_app():
         app = web.Application()
